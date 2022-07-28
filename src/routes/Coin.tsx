@@ -35,7 +35,7 @@ interface RouteState {
   };
 }
 
-interface CoinInfo {
+interface CoinData {
   id: string;
   name: string;
   symbol: string;
@@ -56,7 +56,7 @@ interface CoinInfo {
   last_data_at: string;
 }
 
-interface PriceInfo {
+interface PriceData {
   id: string;
   name: string;
   symbol: string;
@@ -92,10 +92,10 @@ interface PriceInfo {
 
 function Coin() {
   const [loading, setLoading] = useState(true);
-  const { coinId } = (useParams() as unknown) as RouteParams;
+  const { coinId } = useParams() as unknown as RouteParams;
   const { state } = useLocation() as RouteState;
-  const [coinInfo, setCoinInfo] = useState<CoinInfo>();
-  const [priceInfo, setPriceInfo] = useState<PriceInfo>();
+  const [coinInfo, setCoinInfo] = useState<CoinData>();
+  const [priceInfo, setPriceInfo] = useState<PriceData>();
   useEffect(() => {
     (async () => {
       const infoData = await (
@@ -104,6 +104,7 @@ function Coin() {
       const priceData = await (
         await fetch(`https://api.coinpaprika.com/v1/tickers/${coinId}`)
       ).json();
+      console.log(priceData);
       setCoinInfo(infoData);
       setPriceInfo(priceData);
     })();
@@ -112,7 +113,7 @@ function Coin() {
   return (
     <Container>
       <Header>
-        <Title>{state.name || "Loading.."}</Title>
+        <Title>{state?.name || "Loading.."}</Title>
       </Header>
       {loading ? <Loader>Loading...</Loader> : priceInfo?.quotes.USD.price}
     </Container>
