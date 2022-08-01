@@ -1,6 +1,15 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
-import { Routes, Route, useLocation, useParams } from "react-router-dom";
+import { Link, useMatch } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  useParams,
+  Outlet,
+} from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo } from "../api";
 import Chart from "./Chart";
 import Price from "./Price";
 
@@ -15,7 +24,7 @@ const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 120px;
+  margin-bottom: 50px;
 `;
 
 const Title = styled.h1`
@@ -31,9 +40,9 @@ const Loader = styled.div`
 const ContentBox = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-around;
-  width: 480px;
+  justify-content: space-between;
   height: 9vh;
+  padding: 15px;
   background-color: #222020;
   border-radius: 15px;
 `;
@@ -63,6 +72,28 @@ const Img = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 10px;
+`;
+
+const Tabs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin: 25px 0px;
+  gap: 10px;
+`;
+
+const Tab = styled.span<{ isActive: boolean }>`
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 400;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 0px;
+  border-radius: 10px;
+  color: ${(props) =>
+    props.isActive ? props.theme.accentColor : props.theme.textColor};
+  a {
+    display: block;
+  }
 `;
 
 interface RouteParams {
@@ -131,9 +162,19 @@ interface PriceData {
 }
 
 function Coin() {
-  const [loading, setLoading] = useState(true);
   const { coinId } = useParams() as unknown as RouteParams;
   const { state } = useLocation() as RouteState;
+  const priceMatch = useMatch("/:coinId/price");
+  const chartMatch = useMatch("/:coinId/chart");
+  const { isLoading: coinLoading, data: coinData } = useQuery<CoinData>(
+    ["info", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  const { isLoading: priceLoading, data: infoData } = useQuery<PriceData>(
+    ["tickers", coinId],
+    () => fetchCoinInfo(coinId)
+  );
+  /*   const [loading, setLoading] = useState(true);
   const [coinInfo, setCoinInfo] = useState<CoinData>();
   const [priceInfo, setPriceInfo] = useState<PriceData>();
   useEffect(() => {
@@ -150,12 +191,13 @@ function Coin() {
       setLoading(false);
     })();
   }, [coinId]);
-
+ */
+  const loading = coinLoading || priceLoading;
   return (
     <Container>
       <Header>
         <Title>
-          {state?.name ? state.name : loading ? "Loading..." : coinInfo?.name}
+          {state?.name ? state.name : loading ? "Loading..." : coinData?.name}
         </Title>
       </Header>
       {loading ? (
@@ -165,37 +207,42 @@ function Coin() {
           <ContentBox>
             <Contents>
               <span>Rank:</span>
-              <span>{priceInfo?.rank}</span>
+              <span>{infoData?.rank}</span>
             </Contents>
             <Contents>
               <span>SYMBOL:</span>
               <span>
                 <Img
-                  src={`https://coinicons-api.vercel.app/api/icon/${coinInfo?.symbol.toLowerCase()}`}
+                  src={`https://coinicons-api.vercel.app/api/icon/${coinData?.symbol.toLowerCase()}`}
                 />
-                {priceInfo?.symbol}
+                {infoData?.symbol}
               </span>
             </Contents>
             <Contents>
               <span>Open Source:</span>
-              <span>{coinInfo?.open_source ? "Yes" : "No"}</span>
+              <span>{coinData?.open_source ? "Yes" : "No"}</span>
             </Contents>
           </ContentBox>
-          <Description>{coinInfo?.description}</Description>
+          <Description>{coinData?.description}</Description>
           <ContentBox>
             <Contents>
               <span>Total Supply:</span>
-              <span>{priceInfo?.total_supply}</span>
+              <span>{infoData?.total_supply}</span>
             </Contents>
             <Contents>
               <span>Max Supply:</span>
-              <span>{priceInfo?.max_supply}</span>
+              <span>{infoData?.max_supply}</span>
             </Contents>
           </ContentBox>
-          <Routes>
-            <Route path="chart" element={<Chart />} />
-            <Route path="price" element={<Price />} />
-          </Routes>
+          <Tabs>
+            <Tab isActive={chartMatch !== null}>
+              <Link to={`/${coinId}/chart`}>Chart</Link>
+            </Tab>
+            <Tab isActive={priceMatch !== null}>
+              <Link to={`/${coinId}/price`}>Price</Link>
+            </Tab>
+          </Tabs>
+          <Outlet />
         </>
       )}
     </Container>
