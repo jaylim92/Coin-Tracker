@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { Link, useMatch } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import {
   Routes,
   Route,
@@ -9,7 +10,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import styled from "styled-components";
-import { fetchCoinInfo } from "../api";
+import { fetchCoinInfo, fetchTickerInfo } from "../api";
 import Chart from "./Chart";
 import Price from "./Price";
 
@@ -172,7 +173,10 @@ function Coin() {
   );
   const { isLoading: priceLoading, data: infoData } = useQuery<PriceData>(
     ["tickers", coinId],
-    () => fetchCoinInfo(coinId)
+    () => fetchTickerInfo(coinId),
+    {
+      refetchInterval: 1000,
+    }
   );
   /*   const [loading, setLoading] = useState(true);
   const [coinInfo, setCoinInfo] = useState<CoinData>();
@@ -195,6 +199,11 @@ function Coin() {
   const loading = coinLoading || priceLoading;
   return (
     <Container>
+      <Helmet>
+        <title>
+          {state?.name ? state.name : loading ? "Loading..." : coinData?.name}
+        </title>
+      </Helmet>
       <Header>
         <Title>
           {state?.name ? state.name : loading ? "Loading..." : coinData?.name}
@@ -219,8 +228,8 @@ function Coin() {
               </span>
             </Contents>
             <Contents>
-              <span>Open Source:</span>
-              <span>{coinData?.open_source ? "Yes" : "No"}</span>
+              <span>Price:</span>
+              <span>{infoData?.quotes.USD.price}</span>
             </Contents>
           </ContentBox>
           <Description>{coinData?.description}</Description>
@@ -242,7 +251,7 @@ function Coin() {
               <Link to={`/${coinId}/price`}>Price</Link>
             </Tab>
           </Tabs>
-          <Outlet />
+          <Outlet context={{ coinId }} />
         </>
       )}
     </Container>
