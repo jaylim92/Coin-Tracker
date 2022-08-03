@@ -5,8 +5,6 @@ import Coins from "./routes/Coins";
 import Price from "./routes/Price";
 import Chart from "./routes/Chart";
 
-interface IthemeChange {}
-
 function Router() {
   return (
     <BrowserRouter>

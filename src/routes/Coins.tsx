@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
@@ -23,7 +23,7 @@ const Header = styled.header`
 const CoinList = styled.ul``;
 
 const Coin = styled.li`
-  background-color: white;
+  background-color: ${(props) => props.theme.boxColor};
   color: ${(props) => props.theme.textColor};
   margin-bottom: 10px;
   border-radius: 50px;
@@ -67,8 +67,6 @@ interface CoinInterface {
 }
 
 function Coins() {
-  const setChangeTheme = useSetRecoilState(isChangeThemeAtom);
-  const toggleTheme = () => setChangeTheme((prev) => !prev);
   const { isLoading, data } = useQuery<CoinInterface[]>(
     ["allCoins"],
     fetchCoins
@@ -90,7 +88,6 @@ function Coins() {
       </Helmet>
       <Header>
         <Title>코인</Title>
-        <button onClick={toggleTheme}>Toggle Mode</button>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>
