@@ -22,7 +22,7 @@ const CoinList = styled.ul``;
 
 const Coin = styled.li`
   background-color: white;
-  color: ${(props) => props.theme.bgColor};
+  color: ${(props) => props.theme.textColor};
   margin-bottom: 10px;
   border-radius: 50px;
   a {
@@ -64,7 +64,11 @@ interface CoinInterface {
   type: string;
 }
 
-function Coins() {
+interface IthemeProrps {
+  toggleTheme: () => void;
+}
+
+function Coins({ toggleTheme }: IthemeProrps) {
   const { isLoading, data } = useQuery<CoinInterface[]>(
     ["allCoins"],
     fetchCoins
@@ -86,6 +90,7 @@ function Coins() {
       </Helmet>
       <Header>
         <Title>코인</Title>
+        <button onClick={toggleTheme}>Change Theme</button>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>

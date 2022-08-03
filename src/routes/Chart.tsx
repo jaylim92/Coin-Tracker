@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useOutletContext } from "react-router-dom";
 import { fetchCoinHistory } from "../api";
 import ApexChart from "react-apexcharts";
+import Price from "./Price";
 
 interface ChartProps {
   coinId: string;
@@ -17,13 +18,20 @@ interface HistoricalData {
   volume: string;
   market_cap: number;
 }
+interface IChangeThemeProrps {
+  changeTheme: boolean;
+}
 
-function Chart() {
+function Chart({ changeTheme }: IChangeThemeProrps) {
   const { coinId } = useOutletContext<ChartProps>();
   const { isLoading, data } = useQuery<HistoricalData[]>(
     ["ohlcv", coinId],
     () => fetchCoinHistory(coinId)
   );
+  const priceOhlcv = data?.map((ohlcv) => ({
+    x: new Date(ohlcv.time_open),
+    y: [ohlcv.open, ohlcv.high, ohlcv.low, ohlcv.close],
+  }));
 
   return (
     <h1>
@@ -31,15 +39,17 @@ function Chart() {
         "Loading chart..."
       ) : (
         <ApexChart
-          type="line"
-          series={[
-            {
-              name: "price",
-              data: data?.map((price) => parseFloat(price.close)) ?? [],
-            },
-          ]}
+          type="candlestick"
+          series={
+            [
+              {
+                name: "Price",
+                data: priceOhlcv,
+              },
+            ] as unknown as number[]
+          }
           options={{
-            theme: { mode: "dark" },
+            theme: { mode: changeTheme ? "dark" : "light" },
             chart: {
               height: 500,
               width: 500,

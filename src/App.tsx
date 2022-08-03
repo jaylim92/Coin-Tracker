@@ -1,7 +1,8 @@
-import React from "react";
-import { createGlobalStyle } from "styled-components";
+import React, { useState } from "react";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
 import Router from "./Router";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { darkTheme, lightTheme } from "./theme";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -72,11 +73,16 @@ a{
 `;
 
 function App() {
+  const [changeTheme, setChangeTheme] = useState(false);
+  const toggleTheme = () => setChangeTheme((current) => !current);
+
   return (
     <>
-      <GlobalStyle />
-      <Router />
-      <ReactQueryDevtools />
+      <ThemeProvider theme={changeTheme ? darkTheme : lightTheme}>
+        <GlobalStyle />
+        <Router toggleTheme={toggleTheme} changeTheme={changeTheme} />
+        <ReactQueryDevtools />
+      </ThemeProvider>
     </>
   );
 }
