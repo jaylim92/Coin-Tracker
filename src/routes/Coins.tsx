@@ -2,8 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 import { fetchCoins } from "../api";
+import { isChangeThemeAtom } from "../atoms";
 
 const Container = styled.div`
   padding: 0px 20px;
@@ -64,11 +66,9 @@ interface CoinInterface {
   type: string;
 }
 
-interface IthemeProrps {
-  toggleTheme: () => void;
-}
-
-function Coins({ toggleTheme }: IthemeProrps) {
+function Coins() {
+  const setChangeTheme = useSetRecoilState(isChangeThemeAtom);
+  const toggleTheme = () => setChangeTheme((prev) => !prev);
   const { isLoading, data } = useQuery<CoinInterface[]>(
     ["allCoins"],
     fetchCoins
@@ -90,7 +90,7 @@ function Coins({ toggleTheme }: IthemeProrps) {
       </Helmet>
       <Header>
         <Title>코인</Title>
-        <button onClick={toggleTheme}>Change Theme</button>
+        <button onClick={toggleTheme}>Toggle Mode</button>
       </Header>
       {isLoading ? (
         <Loader>Loading...</Loader>

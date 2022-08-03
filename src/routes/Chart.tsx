@@ -3,6 +3,8 @@ import { useOutletContext } from "react-router-dom";
 import { fetchCoinHistory } from "../api";
 import ApexChart from "react-apexcharts";
 import Price from "./Price";
+import { useRecoilValue } from "recoil";
+import { isChangeThemeAtom } from "../atoms";
 
 interface ChartProps {
   coinId: string;
@@ -18,11 +20,10 @@ interface HistoricalData {
   volume: string;
   market_cap: number;
 }
-interface IChangeThemeProrps {
-  changeTheme: boolean;
-}
+interface IChangeThemeProrps {}
 
-function Chart({ changeTheme }: IChangeThemeProrps) {
+function Chart() {
+  const isChangeTheme = useRecoilValue(isChangeThemeAtom);
   const { coinId } = useOutletContext<ChartProps>();
   const { isLoading, data } = useQuery<HistoricalData[]>(
     ["ohlcv", coinId],
@@ -49,7 +50,7 @@ function Chart({ changeTheme }: IChangeThemeProrps) {
             ] as unknown as number[]
           }
           options={{
-            theme: { mode: changeTheme ? "dark" : "light" },
+            theme: { mode: isChangeTheme ? "dark" : "light" },
             chart: {
               height: 500,
               width: 500,

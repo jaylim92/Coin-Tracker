@@ -5,22 +5,16 @@ import Coins from "./routes/Coins";
 import Price from "./routes/Price";
 import Chart from "./routes/Chart";
 
-interface IthemeChange {
-  toggleTheme: () => void;
-  changeTheme: boolean;
-}
+interface IthemeChange {}
 
-function Router({ toggleTheme, changeTheme }: IthemeChange) {
+function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Coins toggleTheme={toggleTheme} />}></Route>
+        <Route path="/" element={<Coins />}></Route>
         <Route path="/:coinId" element={<Coin />}>
           <Route path={`price`} element={<Price />}></Route>
-          <Route
-            path={`chart`}
-            element={<Chart changeTheme={changeTheme} />}
-          ></Route>
+          <Route path={`chart`} element={<Chart />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>
