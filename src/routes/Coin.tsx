@@ -44,7 +44,7 @@ const ContentBox = styled.div`
   justify-content: space-between;
   height: 9vh;
   padding: 15px;
-  background-color: #222020;
+  background-color: ${(props) => props.theme.boxColor};
   border-radius: 15px;
 `;
 const Contents = styled.div`
@@ -67,6 +67,7 @@ const Contents = styled.div`
 const Description = styled.div`
   text-align: center;
   margin: 50px 0px;
+  color: ${(props) => props.theme.accentColor};
 `;
 
 const Img = styled.img`
@@ -87,7 +88,7 @@ const Tab = styled.span<{ isActive: boolean }>`
   text-transform: uppercase;
   font-size: 12px;
   font-weight: 400;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: ${(props) => props.theme.boxColor};
   padding: 10px 0px;
   border-radius: 10px;
   color: ${(props) =>
@@ -128,7 +129,7 @@ interface CoinData {
   last_data_at: string;
 }
 
-interface PriceData {
+export interface PriceData {
   id: string;
   name: string;
   symbol: string;
@@ -161,6 +162,21 @@ interface PriceData {
     };
   };
 }
+
+const HomeBtn = styled.div`
+  border: 1px solid black;
+  color: ${(props) => props.theme.accentColor};
+  background-color: ${(props) => props.theme.boxColor};
+  width: 20%;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50px;
+  position: relative;
+  left: -250px;
+  top: -5%;
+`;
 
 function Coin() {
   const { coinId } = useParams() as unknown as RouteParams;
@@ -199,6 +215,9 @@ function Coin() {
   const loading = coinLoading || priceLoading;
   return (
     <Container>
+      <Link to={"/"}>
+        <HomeBtn> &larr; Home</HomeBtn>
+      </Link>
       <Helmet>
         <title>
           {state?.name ? state.name : loading ? "Loading..." : coinData?.name}
@@ -251,7 +270,7 @@ function Coin() {
               <Link to={`/${coinId}/price`}>Price</Link>
             </Tab>
           </Tabs>
-          <Outlet context={{ coinId }} />
+          <Outlet context={{ coinId, infoData }} />
         </>
       )}
     </Container>

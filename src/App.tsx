@@ -9,6 +9,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { darkTheme, lightTheme } from "./theme";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isChangeThemeAtom } from "./atoms";
+import { Link } from "react-router-dom";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -108,6 +109,7 @@ const Circle = styled.div<{ toggle: boolean }>`
       transition: all 0.5s ease-in-out;
     `}
 `;
+const HomeBtn = styled.div``;
 
 function App() {
   const isChangeTheme = useRecoilValue(isChangeThemeAtom);
